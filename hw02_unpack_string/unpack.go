@@ -11,35 +11,38 @@ var ErrInvalidString = errors.New("invalid string")
 
 func Unpack(input string) (string, error) {
 	result := strings.Builder{}
-	lenStr := len(input)
+	runes := []rune(input)
 
-	for i, symb := range input {
-		if i == 0 && unicode.IsDigit(symb) {
+	for i := 0; i < len(runes); i++ {
+		currentSymbol := runes[i]
+		if i == 0 && unicode.IsDigit(currentSymbol) {
 			return "", ErrInvalidString
 		}
-
-		if i == lenStr-1 {
-			if !unicode.IsDigit(symb) {
-				result.WriteRune(symb)
+		if i == len(runes)-1 {
+			if !unicode.IsDigit(currentSymbol) {
+				result.WriteRune(currentSymbol)
 			}
 			break
 		}
 
-		nextSymb := rune(input[i+1])
+		nextSymbol := runes[i+1]
 
-		if unicode.IsDigit(symb) && unicode.IsDigit(nextSymb) {
+		if unicode.IsDigit(currentSymbol) && unicode.IsDigit(nextSymbol) {
 			return "", ErrInvalidString
 		}
 
-		if (unicode.IsLetter(symb) || unicode.IsSpace(symb)) && (unicode.IsLetter(nextSymb) || unicode.IsSpace(nextSymb)) {
-			result.WriteRune(symb)
+		if unicode.IsDigit(nextSymbol) {
+			countRepeat, err := strconv.Atoi(string(nextSymbol))
+			if err == nil {
+				result.WriteString(strings.Repeat(string(currentSymbol), countRepeat))
+			}
+			continue
 		}
 
-		if (unicode.IsLetter(symb) || unicode.IsSpace(symb)) && unicode.IsDigit(nextSymb) {
-			countRepeat, err := strconv.Atoi(string(input[i+1]))
-			if err == nil {
-				result.WriteString(strings.Repeat(string(symb), countRepeat))
-			}
+		if unicode.IsDigit(currentSymbol) {
+			continue
+		} else {
+			result.WriteRune(currentSymbol)
 		}
 	}
 	return result.String(), nil
