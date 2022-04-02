@@ -48,8 +48,7 @@ func (wText *WordsText) getWords() []*Word {
 
 func (wText *WordsText) getCountWords(count int) []string {
 	words := wText.getWords()
-	lenWords := len(words)
-	if lenWords > count {
+	if len(words) > count {
 		words = words[:10]
 	}
 	result := make([]string, 0)
