@@ -1,11 +1,12 @@
 package hw04lrucache
 
 import (
-	"github.com/stretchr/testify/require"
 	"math/rand"
 	"strconv"
 	"sync"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestCache(t *testing.T) {
@@ -50,10 +51,17 @@ func TestCache(t *testing.T) {
 
 	t.Run("purge logic 1", func(t *testing.T) {
 		c := NewCache(3)
-		_ = c.Set("aaa", 100)
-		_ = c.Set("bbb", 200)
-		_ = c.Set("ccc", 300)
-		_ = c.Set("ddd", 300)
+		wasInCache := c.Set("aaa", 100)
+		require.False(t, wasInCache)
+
+		wasInCache = c.Set("bbb", 200)
+		require.False(t, wasInCache)
+
+		wasInCache = c.Set("ccc", 300)
+		require.False(t, wasInCache)
+
+		wasInCache = c.Set("ddd", 300)
+		require.False(t, wasInCache)
 
 		val, ok := c.Get("aaa")
 		require.False(t, ok)
@@ -62,19 +70,27 @@ func TestCache(t *testing.T) {
 
 	t.Run("purge logic 2", func(t *testing.T) {
 		c := NewCache(3)
-		_ = c.Set("aaa", 100)
-		_ = c.Set("bbb", 200)
-		_ = c.Set("ccc", 300)
+		wasInCache := c.Set("aaa", 100)
+		require.False(t, wasInCache)
 
-		_, ok := c.Get("bbb")
+		wasInCache = c.Set("bbb", 200)
+		require.False(t, wasInCache)
+
+		wasInCache = c.Set("ccc", 300)
+		require.False(t, wasInCache)
+
+		val, ok := c.Get("bbb")
 		require.True(t, ok)
+		require.Equal(t, 200, val)
 
-		_, ok = c.Get("aaa")
+		val, ok = c.Get("aaa")
 		require.True(t, ok)
+		require.Equal(t, 100, val)
 
-		_ = c.Set("ddd", 300)
+		wasInCache = c.Set("ddd", 300)
+		require.False(t, wasInCache)
 
-		val, ok := c.Get("ccc")
+		val, ok = c.Get("ccc")
 		require.False(t, ok)
 		require.Nil(t, val)
 	})

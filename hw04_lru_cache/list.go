@@ -14,11 +14,26 @@ type ListItem struct {
 	Value interface{}
 	Next  *ListItem
 	Prev  *ListItem
+	list  *list
 }
 
 type list struct {
 	item ListItem
 	len  int
+}
+
+func (item *ListItem) NextItem() *ListItem {
+	if p := item.Next; item.list != nil && p != &item.list.item {
+		return p
+	}
+	return nil
+}
+
+func (item *ListItem) PrevItem() *ListItem {
+	if p := item.Prev; item.list != nil && p != &item.list.item {
+		return p
+	}
+	return nil
 }
 
 func (l list) Len() int {
@@ -42,9 +57,9 @@ func (l list) Back() *ListItem {
 func (l *list) PushFront(v interface{}) *ListItem {
 
 	var el = &ListItem{Value: v}
+	el.list = l
 	el.Next = l.item.Next
 	el.Prev = &l.item
-
 	el.Next.Prev = el
 	el.Prev.Next = el
 	l.len++
@@ -53,6 +68,7 @@ func (l *list) PushFront(v interface{}) *ListItem {
 
 func (l *list) PushBack(v interface{}) *ListItem {
 	var el = &ListItem{Value: v}
+	el.list = l
 	el.Next = l.item.Prev.Next
 	el.Prev = l.item.Prev
 	el.Prev.Next = el
@@ -74,6 +90,7 @@ func (l *list) Remove(i *ListItem) {
 	i.Next.Prev = i.Prev
 	i.Next = nil
 	i.Prev = nil
+	i.list = nil
 	l.len--
 }
 
