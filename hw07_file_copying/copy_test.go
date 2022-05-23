@@ -21,6 +21,21 @@ func TestCopy(t *testing.T) {
 		require.Nil(t, err)
 		_, err = os.Stat(dstFile)
 		require.Nil(t, err)
+	})
+
+	t.Run("copy empty file", func(t *testing.T) {
+		tempDir, err := ioutil.TempDir("", "hw_temp_dir")
+		if err != nil {
+			panic(err)
+		}
+		defer os.Remove(tempDir)
+
+		dstFile := filepath.Join(tempDir, "dst.txt")
+		err = Copy("testdata/empty.txt", dstFile, 0, 0)
+		require.Nil(t, err)
+		_, err = os.Stat(dstFile)
+		require.Nil(t, err)
 
 	})
+
 }
