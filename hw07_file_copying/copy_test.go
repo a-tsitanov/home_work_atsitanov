@@ -17,7 +17,7 @@ func TestCopy(t *testing.T) {
 		defer os.Remove(tempDir)
 
 		dstFile := filepath.Join(tempDir, "dst.txt")
-		err = Copy("testdata/input.txt", dstFile, 5500, 1000)
+		err = Copy("testdata/input.txt", dstFile, 0, 0)
 		require.Nil(t, err)
 		_, err = os.Stat(dstFile)
 		require.Nil(t, err)

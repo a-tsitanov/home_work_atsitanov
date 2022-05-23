@@ -13,18 +13,22 @@ var (
 )
 
 func Copy(fromPath, toPath string, offset, limit int64) error {
-	fileinfo, err := os.Stat(fromPath)
+	fileInfo, err := os.Stat(fromPath)
 
 	if err != nil {
 		return err
 	}
 
-	if !fileinfo.Mode().IsRegular() {
+	if !fileInfo.Mode().IsRegular() {
 		return ErrUnsupportedFile
 	}
 
-	if offset > fileinfo.Size() {
+	if offset > fileInfo.Size() {
 		return ErrOffsetExceedsFileSize
+	}
+
+	if limit == 0 {
+		limit = fileInfo.Size()
 	}
 
 	destination, err := os.Create(toPath)
@@ -33,7 +37,7 @@ func Copy(fromPath, toPath string, offset, limit int64) error {
 	}
 	defer destination.Close()
 
-	bar := pb.StartNew(int(fileinfo.Size()))
+	bar := pb.StartNew(int(fileInfo.Size()))
 	f, err := os.OpenFile(fromPath, os.O_RDONLY, os.ModePerm)
 	if err != nil {
 		return err
