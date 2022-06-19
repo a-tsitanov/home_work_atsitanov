@@ -1,0 +1,8 @@
+name              old time/op    new time/op    delta
+ProcessingFile-2     568ms ± 0%     193ms ± 0%  -65.95%
+
+name              old alloc/op   new alloc/op   delta
+ProcessingFile-2     315MB ± 0%      14MB ± 0%  -95.55%
+
+name              old allocs/op  new allocs/op  delta
+ProcessingFile-2     2.85M ± 0%     0.72M ± 0%  -74.58%
