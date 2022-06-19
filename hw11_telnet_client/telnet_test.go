@@ -12,8 +12,17 @@ import (
 )
 
 func TestTelnetClient(t *testing.T) {
+	t.Run("host error", func(t *testing.T) {
+		errConnect := &net.OpError{}
+		in := &bytes.Buffer{}
+		out := &bytes.Buffer{}
+		client := NewTelnetClient("localhost:12345", time.Second*10, ioutil.NopCloser(in), out)
+		err := client.Connect()
+		require.ErrorAs(t, err, &errConnect)
+	})
+
 	t.Run("basic", func(t *testing.T) {
-		l, err := net.Listen("tcp", "127.0.0.1:")
+		l, err := net.Listen("tcp", "127.0.0.1:1111")
 		require.NoError(t, err)
 		defer func() { require.NoError(t, l.Close()) }()
 
@@ -31,7 +40,9 @@ func TestTelnetClient(t *testing.T) {
 
 			client := NewTelnetClient(l.Addr().String(), timeout, ioutil.NopCloser(in), out)
 			require.NoError(t, client.Connect())
-			defer func() { require.NoError(t, client.Close()) }()
+			defer func() {
+				require.NoError(t, client.Close())
+			}()
 
 			in.WriteString("hello\n")
 			err = client.Send()
